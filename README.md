@@ -27,7 +27,7 @@ docker compose up --build
 - `GET /api/v1/models`
 - `GET /health`
 
-Docs available at `/docs`.
+Swagger UI is available at `http://localhost:8000/docs` (also at `/docs` inside the running API container).
 
 ## Quality
 Run locally:
