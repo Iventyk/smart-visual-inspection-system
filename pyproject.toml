@@ -1,6 +1,25 @@
+[project]
+name = "smart-visual-inspection-system"
+version = "0.1.0"
+description = "Smart Visual Inspection System backend scaffold"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.8.0",
+  "pydantic-settings>=2.3.0",
+  "python-multipart>=0.0.9",
+  "email-validator>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+]
+
 [tool.black]
 line-length = 79
-target-version = ["py313"]
+target-version = ["py311"]
 exclude = '''
 /(
     migrations
@@ -8,3 +27,6 @@ exclude = '''
   | .venv
 )/
 '''
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
