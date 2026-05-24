@@ -2,7 +2,11 @@
 
 from fastapi import APIRouter, Form, HTTPException
 
-from app.core.security import create_access_token, get_password_hash, verify_password
+from app.core.security import (
+    create_access_token,
+    get_password_hash,
+    verify_password,
+)
 from app.schemas.auth import RegisterRequest, TokenResponse
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -19,7 +23,9 @@ async def register(payload: RegisterRequest) -> dict:
 
 
 @router.post("/token", response_model=TokenResponse)
-async def token(username: str = Form(...), password: str = Form(...)) -> TokenResponse:
+async def token(
+    username: str = Form(...), password: str = Form(...)
+) -> TokenResponse:
     """OAuth2 password token endpoint."""
     hashed = _USERS.get(username)
     if not hashed or not verify_password(password, hashed):

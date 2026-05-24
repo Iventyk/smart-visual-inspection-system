@@ -22,12 +22,18 @@ def analyze_image_bytes(image_bytes: bytes) -> tuple[str, bytes]:
     annotated = annotate_image(image, detections)
     elapsed = int((time.perf_counter() - started) * 1000)
     result = {
-        "input": {"width": orig_w, "height": orig_h, "size_bytes": len(image_bytes)},
+        "input": {
+            "width": orig_w,
+            "height": orig_h,
+            "size_bytes": len(image_bytes),
+        },
         "results": {
             "detections": detections,
             "summary": {
                 "total_detections": len(detections),
-                "max_confidence": max((d["confidence"] for d in detections), default=0.0),
+                "max_confidence": max(
+                    (d["confidence"] for d in detections), default=0.0
+                ),
                 "processing_time_ms": elapsed,
             },
         },

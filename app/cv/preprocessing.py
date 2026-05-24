@@ -3,12 +3,13 @@
 import cv2
 import numpy as np
 
-
 MIN_SIZE = 224
 MAX_SIZE = 4096
 
 
-def preprocess_image(data: bytes, target_size: int = 640) -> tuple[np.ndarray, tuple[int, int]]:
+def preprocess_image(
+    data: bytes, target_size: int = 640
+) -> tuple[np.ndarray, tuple[int, int]]:
     """Validate and preprocess image bytes."""
     arr = np.frombuffer(data, np.uint8)
     image = cv2.imdecode(arr, cv2.IMREAD_COLOR)

@@ -39,11 +39,11 @@ dev = [
 ]
 
 [tool.black]
-line-length = 88
+line-length = 79
 target-version = ["py311"]
 
 [tool.ruff]
-line-length = 88
+line-length = 79
 
 [tool.pytest.ini_options]
 addopts = "--cov=app --cov-report=term-missing"

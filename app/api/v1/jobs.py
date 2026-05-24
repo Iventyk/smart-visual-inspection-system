@@ -25,22 +25,47 @@ def _refresh(job: dict) -> None:
 
 
 @router.get("", response_model=list[JobResponse])
-async def list_jobs(user: str = Depends(get_current_user), skip: int = 0, limit: int = 20) -> list[JobResponse]:
-    items = [j for j in JOBS.values() if j["user"] == user][skip : skip + limit]
-    return [JobResponse(job_id=i["id"], status=i["status"], created_at=i["created_at"], processed_at=i["processed_at"], result_json=i["result_json"], annotated_image_url=f"/api/v1/jobs/{i['id']}/image") for i in items]
+async def list_jobs(
+    user: str = Depends(get_current_user), skip: int = 0, limit: int = 20
+) -> list[JobResponse]:
+    items = [j for j in JOBS.values() if j["user"] == user][
+        skip : skip + limit
+    ]
+    return [
+        JobResponse(
+            job_id=i["id"],
+            status=i["status"],
+            created_at=i["created_at"],
+            processed_at=i["processed_at"],
+            result_json=i["result_json"],
+            annotated_image_url=f"/api/v1/jobs/{i['id']}/image",
+        )
+        for i in items
+    ]
 
 
 @router.get("/{job_id}", response_model=JobResponse)
-async def get_job(job_id: str, user: str = Depends(get_current_user)) -> JobResponse:
+async def get_job(
+    job_id: str, user: str = Depends(get_current_user)
+) -> JobResponse:
     job = JOBS.get(job_id)
     if not job or job["user"] != user:
         raise HTTPException(status_code=404, detail="Job not found")
     _refresh(job)
-    return JobResponse(job_id=job_id, status=job["status"], created_at=job["created_at"], processed_at=job["processed_at"], result_json=job["result_json"], annotated_image_url=f"/api/v1/jobs/{job_id}/image")
+    return JobResponse(
+        job_id=job_id,
+        status=job["status"],
+        created_at=job["created_at"],
+        processed_at=job["processed_at"],
+        result_json=job["result_json"],
+        annotated_image_url=f"/api/v1/jobs/{job_id}/image",
+    )
 
 
 @router.get("/{job_id}/image")
-async def get_job_image(job_id: str, user: str = Depends(get_current_user)) -> Response:
+async def get_job_image(
+    job_id: str, user: str = Depends(get_current_user)
+) -> Response:
     job = JOBS.get(job_id)
     if not job or job["user"] != user:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -51,7 +76,9 @@ async def get_job_image(job_id: str, user: str = Depends(get_current_user)) -> R
 
 
 @router.delete("/{job_id}", status_code=204)
-async def delete_job(job_id: str, user: str = Depends(get_current_user)) -> None:
+async def delete_job(
+    job_id: str, user: str = Depends(get_current_user)
+) -> None:
     job = JOBS.get(job_id)
     if not job or job["user"] != user:
         raise HTTPException(status_code=404, detail="Job not found")

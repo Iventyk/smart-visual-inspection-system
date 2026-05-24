@@ -10,7 +10,9 @@ def get_model() -> torch.nn.Module:
     """Load model singleton once for worker lifespan."""
     global _model
     if _model is None:
-        _model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
+        _model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
+            weights="DEFAULT"
+        )
         _model.eval()
     return _model
 
