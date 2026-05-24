@@ -203,10 +203,14 @@ Interactive docs are available at `/docs`.
 
 Below are sample annotated outputs with bounding boxes:
 
+![img_4.png](imgs/img_4.png)
+![img_5.png](imgs/img_5.png)
 ![Demo result 1](imgs/img.png)
 ![Demo result 2](imgs/img_1.png)
-![Demo result 3](imgs/img_3.png)
+![img_8.png](imgs/img_8.png)
+![img_7.png](imgs/img_7.png)
 ![Demo result 4](imgs/img_2.png)
+![Demo result 3](imgs/img_3.png)
 
 ---
 
