@@ -1,8 +1,5 @@
 # Smart Visual Inspection System
 
-[![Computer Vision](https://img.shields.io/badge/Domain-Computer%20Vision-0B7285?style=for-the-badge)](#)
-[![Object Detection](https://img.shields.io/badge/Task-Object%20Detection-1864AB?style=for-the-badge)](#)
-[![Object Tracking](https://img.shields.io/badge/Task-Object%20Tracking-1C7ED6?style=for-the-badge)](#)
 [![OpenCV](https://img.shields.io/badge/OpenCV-5C7CFA?style=for-the-badge&logo=opencv&logoColor=white)](#tech-stack)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](#tech-stack)
 [![TorchVision](https://img.shields.io/badge/TorchVision-8F5B00?style=for-the-badge)](#tech-stack)
@@ -12,7 +9,7 @@
 [![Docker Compose](https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#quick-start)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](#requirements)
 
-A production-ready backend-oriented platform for **visual inspection of camera streams** with asynchronous CV inference, job tracking, and result delivery via REST API.
+A production-ready backend-oriented platform for **visual inspection** with asynchronous CV inference, job tracking, and result delivery via REST API.
 
 ---
 
@@ -84,7 +81,7 @@ Client
 
 ## Tech Stack
 
-### Computer Vision (highest priority)
+### Computer Vision
 - **OpenCV** — image preprocessing and frame-level transformations.
 - **PyTorch / TorchVision** — deep-learning based detection pipeline.
 
@@ -156,6 +153,14 @@ Typical settings include:
 
 ---
 
+## Demo
+![img.png](imgs/img.png)
+![img_1.png](imgs/img_1.png)
+![img_3.png](imgs/img_3.png)
+![img_2.png](imgs/img_2.png)
+
+---
+
 ## API Reference
 
 ### Authentication
@@ -206,37 +211,9 @@ docker compose down
 Run locally:
 
 ```bash
-pytest --cov=app
-ruff check .
-black --check .
+docker compose exec api python -m pytest --cov=app
+docker compose exec api ruff check .
+docker compose exec api black --check .
 ```
 
-Recommended additions:
-- add CI checks for test/lint/format,
-- include model smoke tests for critical CV paths,
-- add regression samples for detection/tracking quality.
-
 ---
-
-## Deployment Notes
-
-- Scale workers independently from API service for better throughput.
-- Use persistent storage (S3/NFS/local volume) for output artifacts.
-- Put API behind a reverse proxy (Nginx/Traefik) in production.
-- Configure centralized logging/metrics (e.g., Prometheus + Grafana).
-
----
-
-## Roadmap
-
-- [ ] Multi-model routing by scenario type.
-- [ ] Real-time stream ingestion (RTSP/WebRTC) mode.
-- [ ] Tracking quality metrics and evaluation dashboard.
-- [ ] Webhook callbacks for completed jobs.
-- [ ] Role-based access control for enterprise usage.
-
----
-
-If you want, I can also prepare:
-- a **GitHub-optimized version** (with prettier badges, TOC anchors, and contribution templates),
-- and a **Ukrainian localized README** as `README.uk.md`.
