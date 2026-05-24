@@ -23,8 +23,10 @@ A production-ready backend-oriented platform for **visual inspection** with asyn
 - [Quick Start](#quick-start)
 - [Requirements](#requirements)
 - [Configuration](#configuration)
+- [Visualization Legend](#visualization-legend)
 - [API Reference](#api-reference)
 - [CV Pipeline Flow](#cv-pipeline-flow)
+- [Demo Results](#demo-results)
 - [Development Workflow](#development-workflow)
 - [Testing & Quality](#testing--quality)
 - [Deployment Notes](#deployment-notes)
@@ -153,11 +155,16 @@ Typical settings include:
 
 ---
 
-## Demo
-![img.png](imgs/img.png)
-![img_1.png](imgs/img_1.png)
-![img_3.png](imgs/img_3.png)
-![img_2.png](imgs/img_2.png)
+## Visualization Legend
+
+Annotated output images use category-based bounding box colors:
+
+- 🟩 **Green** — transport objects (e.g., car, motorcycle, bus, train, truck, boat)
+- 🟥 **Red** — people
+- 🟦 **Blue** — animals
+- 🟨 **Yellow** — fallback for other detected classes
+
+This makes mixed scenes easier to read and quickly separates the three primary inspection groups.
 
 ---
 
@@ -189,6 +196,17 @@ Interactive docs are available at `/docs`.
 3. **Inference** through configured PyTorch/TorchVision model.
 4. **Postprocessing** (filtering, formatting, optional overlays).
 5. **Result publication** through job endpoint and output artifact endpoint.
+
+---
+
+## Demo Results
+
+Below are sample annotated outputs with bounding boxes:
+
+![Demo result 1](imgs/img.png)
+![Demo result 2](imgs/img_1.png)
+![Demo result 3](imgs/img_3.png)
+![Demo result 4](imgs/img_2.png)
 
 ---
 
