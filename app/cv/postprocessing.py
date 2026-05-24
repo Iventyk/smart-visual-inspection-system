@@ -3,6 +3,33 @@
 import cv2
 import numpy as np
 
+# COCO class id groups used by torchvision Faster R-CNN.
+PERSON_LABELS = {1}
+TRANSPORT_LABELS = {2, 3, 4, 5, 6, 7, 8, 9}
+ANIMAL_LABELS = {16, 17, 18, 19, 20, 21, 22, 23, 24, 25}
+
+# OpenCV uses BGR color order.
+COLOR_PERSON = (0, 0, 255)  # red
+COLOR_TRANSPORT = (0, 255, 0)  # green
+COLOR_ANIMAL = (255, 0, 0)  # blue
+COLOR_DEFAULT = (0, 255, 255)  # yellow for other classes
+
+
+def _pick_color(label: str) -> tuple[int, int, int]:
+    """Return color by coarse object category."""
+    try:
+        label_id = int(label)
+    except (TypeError, ValueError):
+        return COLOR_DEFAULT
+
+    if label_id in PERSON_LABELS:
+        return COLOR_PERSON
+    if label_id in TRANSPORT_LABELS:
+        return COLOR_TRANSPORT
+    if label_id in ANIMAL_LABELS:
+        return COLOR_ANIMAL
+    return COLOR_DEFAULT
+
 
 def build_detections(pred: dict, threshold: float = 0.5) -> list[dict]:
     """Convert raw predictions to API detection objects."""
@@ -49,14 +76,15 @@ def annotate_image(image: np.ndarray, detections: list[dict]) -> bytes:
         y = det["bbox"]["y"]
         w = det["bbox"]["w"]
         h = det["bbox"]["h"]
-        cv2.rectangle(annotated, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        color = _pick_color(det["label"])
+        cv2.rectangle(annotated, (x, y), (x + w, y + h), color, 2)
         cv2.putText(
             annotated,
             f"{det['label']}:{det['confidence']:.2f}",
             (x, max(10, y - 5)),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
-            (0, 255, 0),
+            color,
             1,
         )
     ok, encoded = cv2.imencode(".png", annotated)
