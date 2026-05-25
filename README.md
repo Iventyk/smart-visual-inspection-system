@@ -36,7 +36,7 @@ A production-ready backend-oriented platform for **visual inspection** with asyn
 
 ## Overview
 
-**Smart Visual Inspection System** processes input images (or frames) through a computer vision pipeline and exposes:
+**Smart Visual Inspection System** processes static input images through a computer vision pipeline and exposes:
 
 1. **Secure API access** (registration/token-based auth).
 2. **Asynchronous analysis jobs** (Celery + Redis queue).
@@ -45,10 +45,9 @@ A production-ready backend-oriented platform for **visual inspection** with asyn
 
 The project is designed for scalable inspection scenarios such as:
 
-- transport monitoring,
-- people/animal detection,
-- edge-camera assisted analytics,
-- and defect/event detection workflows.
+- people/animal/transport detection,
+- static-scene visual analytics,
+- and object/event detection workflows.
 
 ---
 
@@ -84,7 +83,7 @@ Client
 ## Tech Stack
 
 ### Computer Vision
-- **OpenCV** — image preprocessing and frame-level transformations.
+- **OpenCV** — image preprocessing and image-level transformations.
 - **PyTorch / TorchVision** — deep-learning based detection pipeline.
 
 ### Backend & Async Processing
