@@ -30,8 +30,6 @@ A production-ready backend-oriented platform for **visual inspection** with asyn
 - [Demo Results](#demo-results)
 - [Development Workflow](#development-workflow)
 - [Testing & Quality](#testing--quality)
-- [Deployment Notes](#deployment-notes)
-- [Roadmap](#roadmap)
 
 ---
 
@@ -50,8 +48,6 @@ The project is designed for scalable inspection scenarios such as:
 - static-scene visual analytics,
 - and object/event detection workflows.
 
-@@ -142,50 +143,65 @@ For local non-container runs (optional):
-
 ## Configuration
 
 Main runtime configuration is centralized in `app/core/config.py`.
@@ -61,6 +57,9 @@ Typical settings include:
 - security/auth parameters,
 - queue/broker connection settings,
 - storage/result-related paths.
+- `detection_confidence_threshold` — minimum model confidence for drawing
+  boxes and returning detections. The default is `0.7` (70%), which reduces
+  noisy low-confidence boxes around objects.
 
 > Tip: keep environment-specific values in `.env` files and never commit secrets.
 
@@ -80,6 +79,18 @@ Bounding boxes are labeled with the detected object name and confidence percenta
 
 ---
 
+## Demo Results
+
+Below are sample annotated outputs with bounding boxes:
+
+![Demo result](tests/imgs/result/img_1.png)
+![Demo result](tests/imgs/result/img_2.png)
+![Demo result](tests/imgs/result/img_3.png)
+![Demo result](tests/imgs/result/img_4.png)
+![Demo result](tests/imgs/result/img_5.png)
+
+---
+
 ## Evaluation Metrics
 
 Each completed job includes a JSON summary with metrics for quick assessment:
@@ -91,6 +102,43 @@ Each completed job includes a JSON summary with metrics for quick assessment:
 - `processing_time_ms` / `processing_time_sec` — end-to-end image processing time.
 - `throughput_images_per_min` — estimated single-worker throughput derived from processing time.
 - `total_detections` and `max_confidence` — detection volume and strongest model confidence.
+- `detection_confidence_threshold_percent` — active confidence cutoff used for
+  filtering and drawing bounding boxes.
+
+> Note: this project reports **mean confidence of accepted detections** as a
+> practical detection-accuracy proxy because the bundled test images do not
+> include ground-truth annotation files. For formal mAP/precision/recall
+> evaluation, add labeled bounding boxes for the same images.
+
+### Benchmark bundled test images
+
+Run the benchmark helper against the images in `tests/imgs/test`:
+
+```bash
+docker compose exec api python -m scripts.evaluate_test_images tests/imgs/test
+
+if local
+PYTHONPATH=. python scripts/evaluate_test_images.py tests/imgs/test
+```
+
+The helper prints per-image metrics and aggregate values:
+
+| Metric | Meaning |
+| --- | --- |
+| Detections | Number of boxes that passed the configured confidence threshold. |
+| Accuracy (%) | Mean confidence percentage for accepted detections. |
+| Categories | Count and names of unique object classes detected in the image. |
+| Processing (ms) | End-to-end preprocessing, inference, postprocessing, and annotation time. |
+| Throughput (images/min) | Estimated single-worker throughput from processing time. |
+
+Current benchmark configuration:
+
+- Model: TorchVision Faster R-CNN ResNet-50 FPN with COCO weights.
+- Confidence threshold: 70%.
+- Categories supported by the model: 80 COCO object classes.
+- Test image directory: `tests/imgs/test`.
+
+![Demo result](tests/imgs/result/img.png)
 
 ---
 
@@ -122,19 +170,6 @@ Interactive docs are available at `/docs`.
 3. **Inference** through configured PyTorch/TorchVision model.
 4. **Postprocessing** (filtering, formatting, optional overlays).
 5. **Result publication** through job endpoint and output artifact endpoint.
-
----
-
-## Demo Results
-
-Below are sample annotated outputs with bounding boxes:
-
-![Demo result](test/imgs/result/img_1.png)
-![Demo result](test/imgs/result/img_2.png)
-![Demo result](test/imgs/result/img_3.png)
-![Demo result](test/imgs/result/img_4.png)
-![Demo result](test/imgs/result/img_5.png)
-![Demo result](test/imgs/result/img_6.png)
 
 ---
 

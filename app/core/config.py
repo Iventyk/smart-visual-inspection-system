@@ -18,6 +18,7 @@ class Settings(BaseSettings):
         "image/png",
         "image/webp",
     )
+    detection_confidence_threshold: float = 0.7
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

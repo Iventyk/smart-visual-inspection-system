@@ -72,6 +72,32 @@ def test_pipeline_summary_includes_evaluation_metrics(monkeypatch) -> None:
     assert summary["detection_accuracy_percent"] == 75.0
     assert summary["detected_category_count"] == 1
     assert summary["detected_categories"] == ["car"]
+    assert summary["detection_confidence_threshold"] == 0.7
+    assert summary["detection_confidence_threshold_percent"] == 70.0
     assert summary["model_category_count"] == 80
     assert summary["processing_time_ms"] >= 0
     assert "throughput_images_per_min" in summary
+
+
+def test_pipeline_filters_detections_below_configured_threshold(
+    monkeypatch,
+) -> None:
+    image = np.zeros((300, 300, 3), dtype=np.uint8)
+    ok, encoded = cv2.imencode(".png", image)
+    assert ok
+
+    def fake_inference(_tensor: torch.Tensor) -> dict:
+        return {
+            "boxes": torch.tensor([[1.0, 2.0, 11.0, 22.0]]),
+            "scores": torch.tensor([0.69]),
+            "labels": torch.tensor([3]),
+        }
+
+    monkeypatch.setattr("app.cv.pipeline.run_inference", fake_inference)
+
+    result_json, _ = analyze_image_bytes(encoded.tobytes())
+    result = json.loads(result_json)
+    summary = result["results"]["summary"]
+
+    assert result["results"]["detections"] == []
+    assert summary["total_detections"] == 0

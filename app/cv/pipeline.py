@@ -6,6 +6,7 @@ import time
 import numpy as np
 import torch
 
+from app.core.config import settings
 from app.cv.inference import run_inference
 from app.cv.postprocessing import (
     MODEL_CATEGORY_COUNT,
@@ -22,7 +23,9 @@ def analyze_image_bytes(image_bytes: bytes) -> tuple[str, bytes]:
     image_rgb = image[:, :, ::-1].astype(np.float32) / 255.0
     tensor = torch.from_numpy(image_rgb).permute(2, 0, 1)
     pred = run_inference(tensor)
-    detections = build_detections(pred)
+    detections = build_detections(
+        pred, threshold=settings.detection_confidence_threshold
+    )
     annotated = annotate_image(image, detections)
     elapsed = int((time.perf_counter() - started) * 1000)
     elapsed_seconds = elapsed / 1000 if elapsed else 0
@@ -52,6 +55,12 @@ def analyze_image_bytes(image_bytes: bytes) -> tuple[str, bytes]:
                 "detection_accuracy_percent": round(mean_confidence * 100, 2),
                 "detected_category_count": len(categories),
                 "detected_categories": categories,
+                "detection_confidence_threshold": (
+                    settings.detection_confidence_threshold
+                ),
+                "detection_confidence_threshold_percent": round(
+                    settings.detection_confidence_threshold * 100, 2
+                ),
                 "model_category_count": MODEL_CATEGORY_COUNT,
             },
         },
