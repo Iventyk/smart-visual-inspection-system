@@ -24,6 +24,7 @@ A production-ready backend-oriented platform for **visual inspection** with asyn
 - [Requirements](#requirements)
 - [Configuration](#configuration)
 - [Visualization Legend](#visualization-legend)
+- [Evaluation Metrics](#evaluation-metrics)
 - [API Reference](#api-reference)
 - [CV Pipeline Flow](#cv-pipeline-flow)
 - [Demo Results](#demo-results)
@@ -49,96 +50,7 @@ The project is designed for scalable inspection scenarios such as:
 - static-scene visual analytics,
 - and object/event detection workflows.
 
----
-
-## Key Features
-
-- **CV-first architecture** built around preprocessing → inference → postprocessing stages.
-- **Async execution** for non-blocking API responses under heavy workloads.
-- **Token-based authentication** for protected endpoints.
-- **Model introspection endpoint** to expose available inference options.
-- **Containerized runtime** with Docker Compose for reproducible setup.
-- **Clear modular structure** for API, CV logic, DB layer, and background tasks.
-
----
-
-## System Architecture
-
-```text
-Client
-  └──> FastAPI REST API
-          ├──> Auth & validation
-          ├──> Job creation / querying
-          └──> Redis broker
-                  └──> Celery worker
-                          └──> CV Pipeline
-                                  ├── Preprocessing
-                                  ├── Inference
-                                  └── Postprocessing
-                                        └── Persist / expose results
-```
-
----
-
-## Tech Stack
-
-### Computer Vision
-- **OpenCV** — image preprocessing and image-level transformations.
-- **PyTorch / TorchVision** — deep-learning based detection pipeline.
-
-### Backend & Async Processing
-- **FastAPI** — high-performance REST API.
-- **Celery** — background task orchestration.
-- **Redis** — broker/result backend and fast state exchange.
-
-### Infrastructure
-- **Docker + Docker Compose** — local orchestration and consistent environments.
-- **Python 3.11+** — main runtime.
-
----
-
-## Project Structure
-
-```text
-app/
-  api/              # REST endpoints, dependencies, API versioning
-  core/             # configuration, security, storage utilities
-  cv/               # preprocessing, inference, postprocessing, pipeline
-  db/               # session and ORM models
-  schemas/          # Pydantic request/response contracts
-  tasks/            # Celery background jobs
-  main.py           # FastAPI app entrypoint
-
-tests/
-  test_api/         # API and auth tests
-  test_cv/          # computer vision unit tests
-```
-
----
-
-## Quick Start
-
-```bash
-docker compose up --build
-```
-
-After startup:
-- API: `http://localhost:8000`
-- Swagger UI: `http://localhost:8000/docs`
-- Health check: `http://localhost:8000/health`
-
----
-
-## Requirements
-
-- Docker 24+
-- Docker Compose v2+
-
-For local non-container runs (optional):
-- Python 3.11+
-- Redis
-
----
+@@ -142,50 +143,65 @@ For local non-container runs (optional):
 
 ## Configuration
 
@@ -164,6 +76,21 @@ Annotated output images use category-based bounding box colors:
 - 🟨 **Yellow** — fallback for other detected classes
 
 This makes mixed scenes easier to read and quickly separates the three primary inspection groups.
+Bounding boxes are labeled with the detected object name and confidence percentage (for example, `person 98.7%`) instead of raw model class IDs.
+
+---
+
+## Evaluation Metrics
+
+Each completed job includes a JSON summary with metrics for quick assessment:
+
+- `detection_accuracy_percent` — mean confidence of detections that passed the threshold, reported as a percentage.
+- `detected_category_count` — number of unique object categories found in the image.
+- `detected_categories` — sorted names of categories found in the image.
+- `model_category_count` — number of COCO object categories supported by the configured model.
+- `processing_time_ms` / `processing_time_sec` — end-to-end image processing time.
+- `throughput_images_per_min` — estimated single-worker throughput derived from processing time.
+- `total_detections` and `max_confidence` — detection volume and strongest model confidence.
 
 ---
 
@@ -202,14 +129,12 @@ Interactive docs are available at `/docs`.
 
 Below are sample annotated outputs with bounding boxes:
 
-![img_4.png](imgs/img_4.png)
-![img_5.png](imgs/img_5.png)
-![Demo result 1](imgs/img.png)
-![Demo result 2](imgs/img_1.png)
-![img_8.png](imgs/img_8.png)
-![img_7.png](imgs/img_7.png)
-![Demo result 4](imgs/img_2.png)
-![Demo result 3](imgs/img_3.png)
+![Demo result](test/imgs/result/img_1.png)
+![Demo result](test/imgs/result/img_2.png)
+![Demo result](test/imgs/result/img_3.png)
+![Demo result](test/imgs/result/img_4.png)
+![Demo result](test/imgs/result/img_5.png)
+![Demo result](test/imgs/result/img_6.png)
 
 ---
 

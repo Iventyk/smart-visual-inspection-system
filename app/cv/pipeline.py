@@ -7,7 +7,11 @@ import numpy as np
 import torch
 
 from app.cv.inference import run_inference
-from app.cv.postprocessing import annotate_image, build_detections
+from app.cv.postprocessing import (
+    MODEL_CATEGORY_COUNT,
+    annotate_image,
+    build_detections,
+)
 from app.cv.preprocessing import preprocess_image
 
 
@@ -21,6 +25,14 @@ def analyze_image_bytes(image_bytes: bytes) -> tuple[str, bytes]:
     detections = build_detections(pred)
     annotated = annotate_image(image, detections)
     elapsed = int((time.perf_counter() - started) * 1000)
+    elapsed_seconds = elapsed / 1000 if elapsed else 0
+    throughput = 60 / elapsed_seconds if elapsed_seconds else 0
+    categories = sorted({d["label"] for d in detections})
+    mean_confidence = (
+        sum(d["confidence"] for d in detections) / len(detections)
+        if detections
+        else 0.0
+    )
     result = {
         "input": {
             "width": orig_w,
@@ -35,6 +47,12 @@ def analyze_image_bytes(image_bytes: bytes) -> tuple[str, bytes]:
                     (d["confidence"] for d in detections), default=0.0
                 ),
                 "processing_time_ms": elapsed,
+                "processing_time_sec": round(elapsed_seconds, 3),
+                "throughput_images_per_min": round(throughput, 2),
+                "detection_accuracy_percent": round(mean_confidence * 100, 2),
+                "detected_category_count": len(categories),
+                "detected_categories": categories,
+                "model_category_count": MODEL_CATEGORY_COUNT,
             },
         },
     }
